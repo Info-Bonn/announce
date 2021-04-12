@@ -35,7 +35,7 @@ namespace announce.Modules
 
         [Command("edit")]
         [RequireBotPermission(GuildPermission.Administrator)]
-        public async Task CreateAnnouncement(string link, [Remainder] string content = null)
+        public async Task EditAnnouncement(string link, [Remainder] string content = null)
         {
             var text = Context.Message.Attachments
                 .Where(a => a.Filename.EndsWith(".txt"))
