@@ -1,7 +1,6 @@
 ﻿using Discord.Commands;
 using Discord.WebSocket;
 using System;
-using System.Net.Http;
 using System.Reflection;
 using System.Threading.Tasks;
 
@@ -29,12 +28,11 @@ namespace announce.Services
 
         private async Task HandleCommandAsync(SocketMessage messageParam)
         {
-            var message = messageParam as SocketUserMessage;
-            if (message == null) return;
+            if (messageParam is not SocketUserMessage message) return;
 
             int argPos = 0;
 
-            if (!(message.HasCharPrefix('~', ref argPos) ||
+            if (!(message.HasStringPrefix("a!", ref argPos) ||
                 message.HasMentionPrefix(_discordClient.CurrentUser, ref argPos)) ||
                 message.Author.IsBot)
                 return;
