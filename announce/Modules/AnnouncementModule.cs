@@ -18,7 +18,8 @@ namespace announce.Modules
         }
 
         [Command("new")]
-        [RequireBotPermission(GuildPermission.Administrator)]
+        [RequireBotPermission(GuildPermission.SendMessages)]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task CreateAnnouncement(ITextChannel channel, [Remainder] string message = null)
         {
             var text = Context.Message.Attachments
@@ -34,7 +35,8 @@ namespace announce.Modules
         }
 
         [Command("edit")]
-        [RequireBotPermission(GuildPermission.Administrator)]
+        [RequireBotPermission(GuildPermission.SendMessages)]
+        [RequireUserPermission(GuildPermission.Administrator)]
         public async Task EditAnnouncement(string link, [Remainder] string content = null)
         {
             var text = Context.Message.Attachments
