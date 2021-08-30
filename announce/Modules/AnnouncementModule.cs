@@ -22,16 +22,17 @@ namespace announce.Modules
         [RequireUserPermission(GuildPermission.Administrator)]
         public async Task CreateAnnouncement(ITextChannel channel, [Remainder] string message = null)
         {
-            var text = Context.Message.Attachments
-                .Where(a => a.Filename.EndsWith(".txt"))
-                .FirstOrDefault();
+            var attachment = Context.Message.Attachments.FirstOrDefault();
 
-            if (text != null)
+            if (attachment != null)
             {
-                message = await _http.GetStringAsync(text.Url);
+                var stream = await _http.GetStreamAsync(attachment.Url);
+                _ = await channel.SendFileAsync(stream, attachment.Filename, message);
+            } 
+            else
+            {
+                _ = await channel.SendMessageAsync(message);
             }
-
-            var msg = await channel.SendMessageAsync(message);
         }
 
         [Command("edit")]
@@ -39,15 +40,6 @@ namespace announce.Modules
         [RequireUserPermission(GuildPermission.Administrator)]
         public async Task EditAnnouncement(string link, [Remainder] string content = null)
         {
-            var text = Context.Message.Attachments
-                .Where(a => a.Filename.EndsWith(".txt"))
-                .FirstOrDefault();
-
-            if (text != null)
-            {
-                content = await _http.GetStringAsync(text.Url);
-            }
-
             var uri = new Uri(link);
             var parts = uri.AbsolutePath.Split("/")
                 .Select(i => (ulong.TryParse(i, out var id), id))
@@ -67,7 +59,10 @@ namespace announce.Modules
 
                 if (message is IUserMessage userMessage)
                 {
-                    await userMessage.ModifyAsync(m => m.Content = Optional.Create(content));
+                    await userMessage.ModifyAsync(async m => {
+                        m.Content = Optional.Create(content);
+                    });
+
                     return;
                 }
 
